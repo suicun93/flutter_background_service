@@ -161,7 +161,6 @@ public class BackgroundService extends Service implements MethodChannel.MethodCa
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        System.out.println("ConGauBeo has been revived. start Command");
         setManuallyStopped(false);
         enqueue(this);
         runService();
@@ -172,7 +171,6 @@ public class BackgroundService extends Service implements MethodChannel.MethodCa
     AtomicBoolean isRunning = new AtomicBoolean(false);
 
     private void runService() {
-        System.out.println("ConGauBeo has been revived. runService");
         try {
             if (isRunning.get() || (backgroundEngine != null && !backgroundEngine.getDartExecutor().isExecutingDart()))
                 return;
@@ -204,7 +202,6 @@ public class BackgroundService extends Service implements MethodChannel.MethodCa
     }
 
     public void receiveData(JSONObject data) {
-        System.out.println("ConGauBeo has been revived. receiveData");
         if (methodChannel != null) {
             try {
                 methodChannel.invokeMethod("onReceiveData", data);
@@ -218,7 +215,6 @@ public class BackgroundService extends Service implements MethodChannel.MethodCa
 
     @Override
     public void onMethodCall(@NonNull MethodCall call, @NonNull MethodChannel.Result result) {
-        System.out.println("ConGauBeo has been revived onMethodCall.");
         String method = call.method;
 
         try {
