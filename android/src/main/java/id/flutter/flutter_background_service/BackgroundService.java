@@ -1,5 +1,7 @@
 package id.flutter.flutter_background_service;
 
+import static java.lang.Thread.sleep;
+
 import android.app.AlarmManager;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
@@ -21,17 +23,14 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.lang.UnsatisfiedLinkError;
 
 import io.flutter.FlutterInjector;
 import io.flutter.embedding.engine.FlutterEngine;
 import io.flutter.embedding.engine.dart.DartExecutor;
-import io.flutter.embedding.engine.loader.FlutterLoader;
 import io.flutter.plugin.common.JSONMethodCodec;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.view.FlutterCallbackInformation;
-import io.flutter.view.FlutterMain;
 
 public class BackgroundService extends Service implements MethodChannel.MethodCallHandler {
     private static final String TAG = "BackgroundService";
@@ -161,6 +160,27 @@ public class BackgroundService extends Service implements MethodChannel.MethodCa
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+        Thread t = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                while (true) {
+                    try {
+                        sleep(3000);
+                        if (isRunning.get() || (backgroundEngine != null && !backgroundEngine.getDartExecutor().isExecutingDart())) {
+                            // do nothing
+                        } else {
+                            startService(new Intent(getApplicationContext(), BackgroundService.class));
+                        }
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                        sendBroadcast(new Intent("YouWillNeverKillMe"));
+                        System.out.println("ConGauBeo has been killed.");
+                        Log.w(TAG, "Lỗi sleep thread" + e.getMessage());
+                    }
+                }
+            }
+        });
+        t.start();
         setManuallyStopped(false);
         enqueue(this);
         runService();
