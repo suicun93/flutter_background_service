@@ -19,7 +19,6 @@ import androidx.core.app.AlarmManagerCompat;
 import androidx.core.app.NotificationCompat;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -120,8 +119,6 @@ public class BackgroundService extends Service implements MethodChannel.MethodCa
 
         methodChannel = null;
         dartCallback = null;
-        sendBroadcast(new Intent("YouWillNeverKillMe"));
-        System.out.println("ConGauBeo has been killed.");
         super.onDestroy();
     }
 
@@ -168,13 +165,13 @@ public class BackgroundService extends Service implements MethodChannel.MethodCa
                         sleep(3000);
                         if (isRunning.get() || (backgroundEngine != null && !backgroundEngine.getDartExecutor().isExecutingDart())) {
                             // do nothing
+                            System.out.println("I am still alive");
                         } else {
+                            System.out.println("I just have revived");
                             startService(new Intent(getApplicationContext(), BackgroundService.class));
                         }
-                    } catch (InterruptedException e) {
+                    } catch (Exception e) {
                         e.printStackTrace();
-                        sendBroadcast(new Intent("YouWillNeverKillMe"));
-                        System.out.println("ConGauBeo has been killed.");
                         Log.w(TAG, "Lỗi sleep thread" + e.getMessage());
                     }
                 }
@@ -215,8 +212,7 @@ public class BackgroundService extends Service implements MethodChannel.MethodCa
             dartCallback = new DartExecutor.DartCallback(getAssets(), FlutterInjector.instance().flutterLoader().findAppBundlePath(), callback);
             backgroundEngine.getDartExecutor().executeDartCallback(dartCallback);
         } catch (UnsatisfiedLinkError e) {
-            sendBroadcast(new Intent("YouWillNeverKillMe"));
-            System.out.println("ConGauBeo has been killed.");
+            e.printStackTrace();
             Log.w(TAG, "UnsatisfiedLinkError: After a reboot this may happen for a short period and it is ok to ignore then!" + e.getMessage());
         }
     }
@@ -226,8 +222,6 @@ public class BackgroundService extends Service implements MethodChannel.MethodCa
             try {
                 methodChannel.invokeMethod("onReceiveData", data);
             } catch (Exception e) {
-                sendBroadcast(new Intent("YouWillNeverKillMe"));
-                System.out.println("ConGauBeo has been killed.");
                 e.printStackTrace();
             }
         }
@@ -290,11 +284,9 @@ public class BackgroundService extends Service implements MethodChannel.MethodCa
                 result.success(true);
                 return;
             }
-        } catch (JSONException e) {
+        } catch (Exception e) {
             Log.e(TAG, e.getMessage());
             e.printStackTrace();
-            sendBroadcast(new Intent("YouWillNeverKillMe"));
-            System.out.println("ConGauBeo has been killed.");
         }
 
         result.notImplemented();

@@ -11,7 +11,6 @@ import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
@@ -50,9 +49,6 @@ public class FlutterBackgroundServicePlugin extends BroadcastReceiver implements
 
         channel = new MethodChannel(flutterPluginBinding.getBinaryMessenger(), "id.flutter/background_service", JSONMethodCodec.INSTANCE);
         channel.setMethodCallHandler(this);
-
-        IntentFilter intentFilter = new IntentFilter("YouWillNeverKillMe");
-        context.registerReceiver(new RestartServiceReceiver(), intentFilter);
     }
 
     public static void registerWith(Registrar registrar) {
@@ -117,9 +113,8 @@ public class FlutterBackgroundServicePlugin extends BroadcastReceiver implements
 
             result.notImplemented();
         } catch (Exception e) {
+            e.printStackTrace();
             result.error("100", "Failed read arguments", null);
-            context.sendBroadcast(new Intent("YouWillNeverKillMe"));
-            System.out.println("ConGauBeo has been killed.");
         }
     }
 
@@ -129,8 +124,6 @@ public class FlutterBackgroundServicePlugin extends BroadcastReceiver implements
 
         LocalBroadcastManager localBroadcastManager = LocalBroadcastManager.getInstance(this.context);
         localBroadcastManager.unregisterReceiver(this);
-        context.sendBroadcast(new Intent("YouWillNeverKillMe"));
-        System.out.println("ConGauBeo has been killed.");
     }
 
     @Override
@@ -144,8 +137,6 @@ public class FlutterBackgroundServicePlugin extends BroadcastReceiver implements
                 if (channel != null) {
                     channel.invokeMethod("onReceiveData", jData);
                 }
-            } catch (JSONException e) {
-                e.printStackTrace();
             } catch (Exception e) {
                 e.printStackTrace();
             }
