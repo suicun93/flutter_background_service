@@ -165,9 +165,9 @@ public class BackgroundService extends Service implements MethodChannel.MethodCa
                         sleep(3000);
                         if (isRunning.get() || (backgroundEngine != null && !backgroundEngine.getDartExecutor().isExecutingDart())) {
                             // do nothing
-                            System.out.println("I am still alive");
+                            System.out.println("ConGauBeo is still alive");
                         } else {
-                            System.out.println("I just have revived");
+                            System.out.println("ConGauBeo just have revived");
                             startService(new Intent(getApplicationContext(), BackgroundService.class));
                         }
                     } catch (Exception e) {
